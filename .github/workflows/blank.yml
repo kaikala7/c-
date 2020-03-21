@@ -1,0 +1,89 @@
+#include <iostream>
+
+using namespace std;
+
+class Move {
+  public:
+    Move(int sh, int sc, int th, int tc) {
+      sourceHeap = sh;
+      targetHeap = th;
+      sourceCoins = sc;
+      targetCoins = tc;
+    }
+    int getSource() const {
+      return sourceHeap;
+    }
+    int getSourceCoins() const{
+      return sourceCoins;
+    }
+    int getTarget() const{
+      return targetHeap;
+    }
+    int getTargetCoins() const{
+      return targetCoins;
+    }
+
+    friend ostream & operator << (ostream &out, const Move &move){
+      if(move.getTargetCoins() == 0){
+        out << "takes " << move.getSourceCoins() << " from heap " << move.getSource() << " and puts nothing" << endl;
+      }
+      else {
+        out << "takes " << move.getSourceCoins() << " from heap " << move.getSource() << " and puts " << move.getTargetCoins() << " to heap " << move.getTarget() << endl;
+      }
+      return out;
+    }
+
+  private:
+    int sourceHeap;
+    int targetHeap;
+    int sourceCoins;
+    int targetCoins;
+};
+
+class State {
+  public:
+    State(int h, const int c[]){
+      numberOfHeaps = h;
+      for(int i = 0; i < h; i++) {
+        currentCoins[i] = c[i];
+      }
+    }
+    ~State() {
+      delete[] currentCoins;
+    }
+    void next(const  Move &move) {
+      currentCoins[move.getSource()] -= move.getSourceCoins();
+      currentCoins[move.getTarget()] += move.getTargetCoins();
+    }
+ int getHeaps() const{
+      return numberOfHeaps;
+    }
+    int getCoins(int h) const{
+      return currentCoins[h];
+    }
+    friend ostream & operator << (ostream &out, const State &state){
+      for(int j = 0; j < state.getHeaps() - 1; j++){
+        out << state.getCoins(j) << ", " ;
+      }
+      out << state.getCoins(state.getHeaps() - 1) << endl;
+      return out;
+    }
+  private:
+    int numberOfHeaps;
+    int currentCoins[];
+};
+int main() {
+  int a[4] = {10,10,10,10};
+  State state1(4,a);
+  cout << state1;
+  Move move1(2,9,0,8);
+  cout << move1;
+  state1.next(move1);
+  cout << state1;
+  Move move2(1,3,2,1);
+  cout << move2;
+  state1.next(move2);
+  cout << state1;
+
+  return 0;
+}
